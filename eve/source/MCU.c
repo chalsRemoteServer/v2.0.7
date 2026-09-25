@@ -11,16 +11,35 @@
 #include "../include/EVE_arduino.h"
 #include <stddef.h>
 
-// salida de las pines--------------------------
-#define GPIO_SPIM_CLK    27 //--SPI MASTER CLK  GPIO27
-#define GPIO_SPIM_MISO   30 //--SPI MASTER MISO GPIO30
-#define GPIO_SPIM_MOSI   29 //--SPI MASTER MOSI GPIO29
-#define GPIO_EVE_PD      58 //PD del EVE, GPIO58,{MM900EV[pin12]}
+
+
+
+
 #define SPI_CHANNEL (3)
+// salida de las pines--------------------GPIO
+//#define   GPIO_SD_CLK          (19) fileSys.h
+//#define   GPIO_SD_CMD         (20) fileSys.h
+/*#define  GPIO_SD_DAT3         (21)
+#define    GPIO_SD_DAT2         (22)
+#define    GPIO_SD_DAT1         (23)
+#define    GPIO_SD_DAT0         (24)
+#define    GPIO_SD_CD              (25)
+#define    GPIO_SD_WP              (26) fileSys.h*/
+#define GPIO_SPIM_CLK  27 //--SPI MASTER CLK  GPIO27
+#define GPIO_SPIM_MOSI  29 //--SPI MASTER MOSI GPIO29
+#define GPIO_SPIM_MISO  30 //--SPI MASTER MISO GPIO30
+#define GPIO_SPIM_SS_EXP 32 //SS SPIM EXPANSOR de entradas digitales
+
 #if SPI_CHANNEL == 3
 #define SPI_SS_GPIO (35)
 #define SPI_SS_FUNC (pad_gpio35)
 #endif
+
+#define GPIO_TX_UART0           48 //UART0 TX
+#define GPIO_RX_UART0           49// UART0 RX
+#define GPIO_TX_UART1            52 // UART 1  TX
+#define GPIO_RX_UART1            53//UART 1 RX
+#define GPIO_EVE_PD    58 //PD del EVE, GPIO58,{MM900EV[pin12]}
 
 void MCU_Init(void){
     sys_enable(sys_device_spi_master);//init SPI para FT812
@@ -33,6 +52,30 @@ void MCU_Init(void){
     spi_option(SPIM, spi_option_fifo, 1);            // Enable 16-byte FIFO
     gpio_dir(GPIO_EVE_PD, pad_dir_output);
 }//fin MCU_Init-----------------------------------------
+
+
+void MCU_serial_init(void){
+	sys_enable(sys_device_uart0);/* enable uart */
+	sys_enable(sys_device_uart1);/* enable uart */
+	sys_enable(sys_device_timer_wdt);
+	gpio_function(GPIO_TX_UART0, pad_uart0_txd); /* UART0 TXD */ /* Set UART0 GPIO functions to UART0_TXD and UART0_RXD... */
+	gpio_function(GPIO_RX_UART0, pad_uart0_rxd); /* UART0 RXD */
+    gpio_function(GPIO_TX_UART1, pad_uart1_txd); /* UART1 TXD */ /* Set UART0 GPIO functions to UART0_TXD and UART0_RXD... */
+	gpio_function(GPIO_RX_UART1, pad_uart1_rxd); /* UART1 RXD */
+	gpio_function(54, pad_gpio54);//pin entrada de pruebas de
+
+	uart_mode(UART1, uart_mode_16550);
+	uart_set_trigger_level(UART1, uart_mode_16550,
+						   uart_fifo_trigger_level_14,  // RX trigger en 8 bytes
+						   0, 0);
+						   uart_fifo_trigger_level_0,  // TX trigger (no usado)
+	uart_open(UART0, 1,UART_DIVIDER_19200_BAUD, uart_data_bits_8, uart_parity_none,uart_stop_bits_1);
+	uart_open(UART1, 1,UART_DIVIDER_19200_BAUD, uart_data_bits_8, uart_parity_odd,uart_stop_bits_2);
+
+
+}//fin MCU serial init-------------------------------------
+
+
 
 /**
  @brief MCU specific setup

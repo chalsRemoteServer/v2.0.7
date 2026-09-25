@@ -60,6 +60,8 @@
 #include "RTOS.h"
 #include "ComSer.h"
 #include "platform_time.h"
+#include "../include/MCU.h"
+
 
 /* Three Demo Tasks are implemented here to illustrate the usage of FreeRTOS.
  *
@@ -89,26 +91,7 @@ extern volatile struct _DISPLAY_VFD_ comm;
 int main(void)
 {
 	sys_reset_all(); /****** Peripheral reset ******/
-	sys_enable(sys_device_uart0);/* enable uart */
-	sys_enable(sys_device_uart1);/* enable uart */
-
-	sys_enable(sys_device_timer_wdt);
-    gpio_function(48, pad_uart0_txd); /* UART0 TXD */ /* Set UART0 GPIO functions to UART0_TXD and UART0_RXD... */
-    gpio_function(49, pad_uart0_rxd); /* UART0 RXD */
-    gpio_function(52, pad_uart1_txd); /* UART1 TXD */ /* Set UART0 GPIO functions to UART0_TXD and UART0_RXD... */
-  	gpio_function(53, pad_uart1_rxd); /* UART1 RXD */
-    gpio_function(54, pad_gpio54);//pin entrada de pruebas de
-    gpio_dir(54,pad_dir_input);
-    gpio_function(12,pad_gpio12);
-    gpio_dir(12,pad_dir_output);
-    uart_mode(UART1, uart_mode_16550);
-    uart_set_trigger_level(UART1, uart_mode_16550,
-                           uart_fifo_trigger_level_14,  // RX trigger en 8 bytes
-                           uart_fifo_trigger_level_0,  // TX trigger (no usado)
-                           0, 0);
-	uart_open(UART0, 1,UART_DIVIDER_19200_BAUD, uart_data_bits_8, uart_parity_none,uart_stop_bits_1);
-	uart_open(UART1, 1,UART_DIVIDER_19200_BAUD, uart_data_bits_8, uart_parity_odd,uart_stop_bits_2);
-
+	MCU_serial_init();
 	uart_puts(UART0,/* Print out a welcome message... */
 			"\x1B[2J" /* ANSI/VT100 - Clear the Screen */
 			"\x1B[H" /* ANSI/VT100 - Move Cursor to Home */

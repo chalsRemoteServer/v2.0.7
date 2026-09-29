@@ -17,6 +17,13 @@
 
 #define SPI_CHANNEL (3)
 // salida de las pines--------------------GPIO
+#define GPIO_ADC_POT1                 6//input Ananalog POT
+#define GPIO_ADC_TEMP_SENS 7
+#define GPIO_DISP_BUSY    8//DISPLAY busy to uProc
+#define GPIO_INT_J5_J6                  9//INT A del expansorde puertos de J5 Y J6
+#define GPIO_ADC_POT1               10  //input Ananalog POT
+#define GPIO_DAC_1                      13 //SALIDA ANALOGICA control motores VFD
+#define GPIO_DAC_2                      14//salida de analogico de control motores VFD
 //#define   GPIO_SD_CLK          (19) fileSys.h
 //#define   GPIO_SD_CMD         (20) fileSys.h
 /*#define  GPIO_SD_DAT3         (21)
@@ -37,8 +44,13 @@
 
 #define GPIO_TX_UART0           48 //UART0 TX
 #define GPIO_RX_UART0           49// UART0 RX
+#define GPIO_MO2                        51
 #define GPIO_TX_UART1            52 // UART 1  TX
 #define GPIO_RX_UART1            53//UART 1 RX
+#define GPIO_MET_INT    54//METAL INT from uProc
+#define GPIO_MO3                      55
+#define GPIO_MO1                      56
+#define GPIO_MO4                      57  //Salida MO4
 #define GPIO_EVE_PD    58 //PD del EVE, GPIO58,{MM900EV[pin12]}
 
 void MCU_Init(void){
@@ -67,8 +79,7 @@ void MCU_serial_init(void){
 	uart_mode(UART1, uart_mode_16550);
 	uart_set_trigger_level(UART1, uart_mode_16550,
 						   uart_fifo_trigger_level_14,  // RX trigger en 8 bytes
-						   0, 0);
-						   uart_fifo_trigger_level_0,  // TX trigger (no usado)
+						   0, 0,uart_fifo_trigger_level_0);  // TX trigger (no usado)
 	uart_open(UART0, 1,UART_DIVIDER_19200_BAUD, uart_data_bits_8, uart_parity_none,uart_stop_bits_1);
 	uart_open(UART1, 1,UART_DIVIDER_19200_BAUD, uart_data_bits_8, uart_parity_odd,uart_stop_bits_2);
 
